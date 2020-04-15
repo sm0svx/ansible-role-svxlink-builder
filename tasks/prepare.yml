@@ -1,0 +1,4 @@
+---
+- name: Install required packages
+  package:
+    name: "{{ svxlink_builder_nice_packages + svxlink_builder_packages }}"

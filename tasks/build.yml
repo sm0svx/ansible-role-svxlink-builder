@@ -1,0 +1,129 @@
+---
+- name: Clone git repo
+  tags:
+    - git
+  git:
+    repo: "{{ svxlink_builder_git_repo }}"
+    version: "{{ svxlink_builder_git_version }}"
+    dest: "svxlink-{{ svxlink_builder_git_version }}"
+
+- name: Clear build cache
+  file:
+    name: "build-{{ svxlink_builder_git_version }}"
+    state: absent
+  when: svxlink_builder_clear_build_cache
+
+- name: Create build directory
+  file:
+    name: "build-{{ svxlink_builder_git_version }}"
+    state: directory
+
+- block:
+  - name: Run CMake
+    shell: >
+      cmake
+      -G Ninja
+      -DUSE_QT=OFF
+      -DCMAKE_INSTALL_PREFIX=/usr
+      -DSYSCONF_INSTALL_DIR=/etc
+      -DLOCAL_STATE_DIR=/var
+      -DWITH_SYSTEMD=ON
+      -DCPACK_GENERATOR={{ svxlink_builder_cpack_generator }}
+      ../svxlink-{{ svxlink_builder_git_version }}/src
+      2>&1
+    args:
+      chdir: "build-{{ svxlink_builder_git_version }}"
+    changed_when: false
+    register: cmake
+  rescue:
+  - debug:
+      msg: "{{ cmake.stdout_lines }}"
+    failed_when: true
+
+- block:
+  - name: Build project
+    shell: ninja 2>&1
+    args:
+      chdir: "build-{{ svxlink_builder_git_version }}"
+    changed_when: false
+    register: build
+  rescue:
+  - debug:
+      msg: "{{ build.stdout_lines }}"
+    failed_when: true
+
+- block:
+  - name: Build documentation
+    shell: ninja doc 2>&1
+    args:
+      chdir: "build-{{ svxlink_builder_git_version }}"
+    changed_when: false
+    register: build_doc
+  rescue:
+  - debug:
+      msg: "{{ build_doc.stdout_lines }}"
+    failed_when: true
+
+- block:
+  - name: Build package
+    shell: ninja package 2>&1
+    args:
+      chdir: "build-{{ svxlink_builder_git_version }}"
+    changed_when: false
+    register: build_package
+  rescue:
+  - debug:
+      msg: "{{ build_package.stdout_lines }}"
+    failed_when: true
+
+- name: Find packages
+  find:
+    paths: "build-{{ svxlink_builder_git_version }}"
+    patterns: ["*.{{ svxlink_builder_package_ext }}"]
+  register: find_packages
+
+- assert:
+    that:
+    - find_packages.matched >= 1
+    fail_msg: "There must be at least one package present after build"
+
+- set_fact:
+    package_path: "{{ (find_packages.files | sort(attribute='mtime') | last).path }}"
+
+- set_fact:
+    package_name: "{{ package_path | basename }}"
+
+- name: Remove older packages
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ find_packages.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: item.path != package_path
+
+- name: Make sure temp directory exist
+  local_action:
+    module: file
+    name: tmp
+    state: directory
+  run_once: true
+
+- name: Fetch built package from build host
+  command: >
+    /usr/bin/rsync --itemize-changes --ignore-existing
+    -e '{{ ansible_ssh_executable }} {{ ansible_ssh_common_args|d("") }} -i {{ ansible_ssh_private_key_file }} -p {{ ansible_port|d(22) }}'
+    {{ ansible_ssh_user }}@{{ ansible_host|d(inventory_hostname) }}:{{ package_path }}
+    {{ svxlink_builder_package_dir }}/
+  connection: local
+  register: rsync
+  changed_when: rsync.stdout != ""
+
+- name: Remove any old local packages
+  local_action:
+    module: file
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ svxlink_builder_package_dir }}/*"
+  when: item|basename != package_name

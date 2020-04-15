@@ -1,0 +1,24 @@
+---
+- name: Gather OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.yml"
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    #- "{{ ansible_distribution }}.yml"
+  tags:
+    - build-prepare
+    - build
+
+- name: Prepare SvxLink build computer
+  tags:
+    - build-prepare
+  vars:
+    ansible_become: true
+  import_tasks: prepare.yml
+
+- name: Build SvxLink
+  tags:
+    - build
+  vars:
+    ansible_become: false
+  import_tasks: build.yml

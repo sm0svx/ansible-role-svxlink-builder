@@ -1,0 +1,34 @@
+---
+svxlink_builder_nice_packages:
+  - tmux
+  - vim
+  - aptitude
+
+svxlink_builder_packages:
+  - rsync
+  - git
+  - g++
+  - cmake
+  - ninja-build
+  - libsigc++-2.0-dev
+  - libgsm1-dev
+  - libpopt-dev
+  - tcl-dev
+  - libgcrypt20-dev
+  - libspeex-dev
+  - libasound2-dev
+  - libopus-dev
+  - librtlsdr-dev
+  - doxygen
+  - groff
+  - alsa-utils
+  - vorbis-tools
+  - curl
+  - libcurl4-openssl-dev
+  - git
+  - rtl-sdr
+  - libjsoncpp-dev
+
+svxlink_builder_cpack_generator: "DEB"
+
+svxlink_builder_package_ext: "deb"

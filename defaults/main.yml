@@ -1,0 +1,9 @@
+---
+# The Git remote repo URL/path
+svxlink_builder_git_repo: "https://github.com/sm0svx/svxlink.git"
+
+# The Git branch/tag/hash to use
+svxlink_builder_git_version: "master"
+
+# Clear build cache before building
+svxlink_builder_clear_build_cache: False
