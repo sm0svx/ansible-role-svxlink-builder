@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  role_name: ansible-role-svxlink-builder
+  role_name: svxlink-builder
   author: Tobias Blomberg SM0SVX
   description: >
     An Ansible role for building a SvxLink package from source code.
