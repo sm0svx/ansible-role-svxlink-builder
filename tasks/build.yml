@@ -29,6 +29,8 @@
       -DLOCAL_STATE_DIR=/var
       -DWITH_SYSTEMD=ON
       -DCPACK_GENERATOR={{ svxlink_builder_cpack_generator }}
+      -DSVXLINK_USER={{ svxlink_builder_run_as_user }}
+      -DSVXLINK_GROUP={{ svxlink_builder_run_as_group }}
       ../svxlink-{{ svxlink_builder_git_version }}/src
       2>&1
     args:

@@ -7,3 +7,9 @@ svxlink_builder_git_version: "master"
 
 # Clear build cache before building
 svxlink_builder_clear_build_cache: False
+
+# The name of the user to run svxlink processes as
+svxlink_builder_run_as_user: "svxlink"
+
+# The name of the group to run svxlink processes as
+svxlink_builder_run_as_group: "svxlink"
