@@ -5,9 +5,7 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}.yml"
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     #- "{{ ansible_distribution }}.yml"
-  tags:
-    - build-prepare
-    - build
+  tags: always
 
 - name: Prepare SvxLink build computer
   tags:

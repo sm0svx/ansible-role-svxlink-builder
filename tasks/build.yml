@@ -114,7 +114,7 @@
 - name: Fetch built package from build host
   command: >
     /usr/bin/rsync --itemize-changes --ignore-existing
-    -e '{{ ansible_ssh_executable }} {{ ansible_ssh_common_args|d("") }} -i {{ ansible_ssh_private_key_file }} -p {{ ansible_port|d(22) }}'
+    -e '{{ ansible_ssh_executable }} {{ ansible_ssh_common_args|d("") }} -i {{ ansible_ssh_private_key_file }} {{ (ansible_port is defined) | ternary("-p " ~ ansible_port|d(""), "") }}'
     {{ ansible_ssh_user }}@{{ ansible_host|d(inventory_hostname) }}:{{ package_path }}
     {{ svxlink_builder_package_dir }}/
   connection: local
