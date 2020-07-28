@@ -28,6 +28,7 @@ svxlink_builder_packages:
   - git
   - rtl-sdr
   - libjsoncpp-dev
+  - libogg-dev
 
 svxlink_builder_cpack_generator: "DEB"
 
