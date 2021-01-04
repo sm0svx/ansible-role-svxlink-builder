@@ -13,3 +13,7 @@ svxlink_builder_run_as_user: "svxlink"
 
 # The name of the group to run svxlink processes as
 svxlink_builder_run_as_group: "svxlink"
+
+# Choose the number of parallell jobs to use when building. Leave undefined for
+# letting the build tool choose what is appropriate for the build platform.
+#svxlink_builder_build_jobs: 4

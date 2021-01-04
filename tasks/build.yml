@@ -44,7 +44,10 @@
 
 - block:
   - name: Build project
-    shell: ninja 2>&1
+    shell: >
+      nice ninja
+      {% if svxlink_builder_build_jobs is defined %}-j{{ svxlink_builder_build_jobs }}{% endif %}
+      2>&1
     args:
       chdir: "build-{{ svxlink_builder_git_version }}"
     changed_when: false
