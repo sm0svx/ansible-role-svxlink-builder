@@ -24,12 +24,14 @@ svxlink_builder_packages:
   - alsa-utils
   - vorbis-tools
   - curl
+  - libssl-dev
   - libcurl4-openssl-dev
   - git
   - rtl-sdr
   - libjsoncpp-dev
   - libogg-dev
   - libgpiod-dev
+  - ladspa-sdk
 
 svxlink_builder_cpack_generator: "DEB"
 
