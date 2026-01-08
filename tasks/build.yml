@@ -115,16 +115,20 @@
   run_once: true
 
 - name: Fetch built package from build host
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-  command: >-
-    /usr/bin/rsync --itemize-changes --ignore-existing
-    -e '{{ ansible_ssh_executable }} {{ ansible_ssh_common_args|d("") }} -i {{ ansible_ssh_private_key_file }} {{ (ansible_port is defined) | ternary("-p " ~ ansible_port|d(""), "") }}'
-    {{ ansible_ssh_user }}@{{ ansible_host|d(inventory_hostname) }}:{{ package_path }}
-    {{ svxlink_builder_package_dir }}/
-  connection: local
-  register: rsync
-  changed_when: rsync.stdout != ""
+  ansible.posix.synchronize:
+    mode: pull
+    src: "{{ package_path }}"
+    dest: "{{ svxlink_builder_package_dir }}/"
+  #vars:
+  #  ansible_python_interpreter: /usr/bin/python3
+  #command: >-
+  #  /usr/bin/rsync --itemize-changes --ignore-existing
+  #  -e '{{ ansible_ssh_executable }} {{ ansible_ssh_common_args|d("") }} -i {{ ansible_ssh_private_key_file }} {{ (ansible_port is defined) | ternary("-p " ~ ansible_port|d(""), "") }}'
+  #  {{ ansible_ssh_user }}@{{ ansible_host|d(inventory_hostname) }}:{{ package_path }}
+  #  {{ svxlink_builder_package_dir }}/
+  #connection: local
+  #register: rsync
+  #changed_when: rsync.stdout != ""
 
 - name: Remove any old local packages
   local_action:
